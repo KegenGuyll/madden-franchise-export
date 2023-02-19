@@ -213,9 +213,8 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
     req.on('data', chunk => {
         body += chunk.toString();
     });
-    req.on('end', () => {
+    req.on('end', async () => {
         const { rosterInfoList } = JSON.parse(body);
-        const players = {};
 
         if(!rosterInfoList) {
             res.sendStatus('500')
@@ -224,16 +223,11 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
 
         // creating a key value pair
         rosterInfoList.forEach(player => {
-            players[player.rosterId] = player;
+           bulk.insert({[player.rosterId]: player})
+            console.log('player inserted')
         });
 
-
-        Object.keys(players).forEach((key) => {
-            bulk.insert(players[key])
-        })
-
-
-        bulk.execute();
+       await bulk.execute();
 
 
         // setDoc(doc(db, "rosters", leagueId), {...players})
