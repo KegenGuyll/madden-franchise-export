@@ -179,7 +179,7 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
         }
 
         rosterInfoList.forEach(player => {
-            bulk.insert({...player})
+            bulk.find({rosterId: player.rosterId}).upsert().replaceOne({...player})
         });
 
         await bulk.execute();
@@ -207,7 +207,7 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
         }
 
         rosterInfoList.forEach(player => {
-           bulk.insert({...player})
+           bulk.find({rosterId: player.rosterId}).upsert().replaceOne({...player})
         });
 
        await bulk.execute();
