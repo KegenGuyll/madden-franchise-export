@@ -183,13 +183,11 @@ app.post('/:platform/:leagueId/team/:teamId/roster', (req, res) => {
         rosterInfoList.forEach(player => {
             players[player.rosterId] = player;
         });
-        db.collection(`rosters`).doc(`${leagueId}`).set(players, error => {
-            if (error) {
-                console.log('Data could not be saved.' + error);
-            } else {
-                console.log('Data saved successfully.');
-            }
-        });
+        db.collection(`rosters`).doc(`${leagueId}`).set({
+            ...players
+        })
+        .then(() => console.log('data added successfully'))
+        .catch((err) => console.log('data failed', err));
         res.sendStatus(200);
     });
 });
