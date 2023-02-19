@@ -1,5 +1,6 @@
 const express = require('express');
-const admin = require('firebase-admin');
+const admin = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore')
 
 const app = express();
 
@@ -15,9 +16,7 @@ const serviceAccount = require("./cred.json");
 // TODO: Uncomment out line 17-21
 // Enter your database url from firebase where it says <DATABASE_NAME> below.
 // Refer to picture for reference. It's the 2nd property.
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+const firebaseApp = admin.initializeApp(serviceAccount);
 
 app.set('port', (process.env.PORT || 3001));
 
@@ -169,7 +168,7 @@ app.post('/:username/:platform/:leagueId/freeagents/roster', (req, res) => {
 });
 
 app.post('/:platform/:leagueId/team/:teamId/roster', (req, res) => {
-    // const db = admin.firestore();
+    const db = getFirestore(firebaseApp)
     // const ref = db.ref();
     const {
         params: { username, leagueId, teamId }
@@ -179,22 +178,18 @@ app.post('/:platform/:leagueId/team/:teamId/roster', (req, res) => {
         body += chunk.toString();
     });
     req.on('end', () => {
-        console.log(body)
         const { rosterInfoList } = JSON.parse(body);
-        // const dataRef = ref.child(
-        //     `data/${username}/${leagueId}/teams/${teamId}/roster`
-        // );
         const players = {};
         rosterInfoList.forEach(player => {
             players[player.rosterId] = player;
         });
-        // dataRef.set(players, error => {
-        //     if (error) {
-        //         console.log('Data could not be saved.' + error);
-        //     } else {
-        //         console.log('Data saved successfully.');
-        //     }
-        // });
+        db.collection(`rosters`).doc(`${leagueId}`).set(players, error => {
+            if (error) {
+                console.log('Data could not be saved.' + error);
+            } else {
+                console.log('Data saved successfully.');
+            }
+        });
         res.sendStatus(200);
     });
 });
