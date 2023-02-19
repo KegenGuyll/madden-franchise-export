@@ -161,7 +161,7 @@ function capitalizeFirstLetter(string) {
 // );
 
 // ROSTERS
-app.post('/:platform/:leagueId/freeagents', (req, res) => {
+app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
     const bulk = mongoService.db(leagueId).collection('players').initializeUnorderedBulkOp()
     const {
         params: { username, leagueId, teamId }
@@ -205,7 +205,7 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
             res.sendStatus('500')
             return
         }
-        
+
         rosterInfoList.forEach(player => {
            bulk.insert({...player})
         });
