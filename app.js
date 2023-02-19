@@ -1,6 +1,30 @@
 const express = require('express');
 const {initializeApp} = require('firebase/app');
-const { getFirestore, doc, collection, setDoc } = require('firebase/firestore')
+const { getFirestore } = require('firebase/firestore')
+require("dotenv").config();
+
+const { MongoClient } = require('mongodb')
+
+const user = process.env.DB_USER;
+const password = process.env.DB_PASS;
+const host = process.env.DB_HOST;
+
+const uri = `mongodb+srv://${user}:${password}@${host}`;
+
+const mongoService = new MongoClient(uri);
+
+const connectMongoDb = () => {
+  mongoService
+    .connect()
+    .then(() => {
+      console.log("mongodb is connected");
+    })
+    .catch((e) => {
+      console.error(e);
+    });
+};
+
+connectMongoDb();
 
 const app = express();
 
@@ -180,6 +204,10 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
     //     test: '2q3'
     // })
 
+    const bulk = mongoService.db(leagueId).collection('rosters').initializeUnorderedBulkOp()
+
+    mongoService.db(leagueId).collection("rosters").insertOne({test: 123});
+
    
 
     req.on('data', chunk => {
@@ -194,13 +222,23 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
             return
         }
 
+        // creating a key value pair
         rosterInfoList.forEach(player => {
             players[player.rosterId] = player;
         });
 
-        setDoc(doc(db, "rosters", leagueId), {...players})
-        .then(() => console.log('data added successfully'))
-        .catch((err) => console.log('data failed', err));
+
+        Object.keys(players).forEach((key) => {
+            bulk.insert(players[key])
+        })
+
+
+        bulk.execute();
+
+
+        // setDoc(doc(db, "rosters", leagueId), {...players})
+        // .then(() => console.log('data added successfully'))
+        // .catch((err) => console.log('data failed', err));
         res.sendStatus(200);
     });
 });
