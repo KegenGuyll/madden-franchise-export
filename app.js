@@ -26,7 +26,7 @@ app.get('*', (req, res) => {
 });
 
 app.post('/:username/:platform/:leagueId/leagueteams', (req, res) => {
-    const db = admin.database();
+    const db = admin.firestore();
     const ref = db.ref();
     let body = '';
     req.on('data', chunk => {
@@ -46,7 +46,7 @@ app.post('/:username/:platform/:leagueId/leagueteams', (req, res) => {
 });
 
 app.post('/:username/:platform/:leagueId/standings', (req, res) => {
-    const db = admin.database();
+    const db = admin.firestore();
     const ref = db.ref();
     let body = '';
     req.on('data', chunk => {
@@ -74,7 +74,7 @@ function capitalizeFirstLetter(string) {
 app.post(
     '/:username/:platform/:leagueId/week/:weekType/:weekNumber/:dataType',
     (req, res) => {
-        const db = admin.database();
+        const db = admin.firestore();
         const ref = db.ref();
         const {
             params: { username, leagueId, weekType, weekNumber, dataType },
@@ -138,8 +138,8 @@ app.post(
 
 // ROSTERS
 app.post('/:username/:platform/:leagueId/freeagents/roster', (req, res) => {
-    const db = admin.database();
-    const ref = db.ref();
+    // const db = admin.firestore();
+    // const ref = db.ref();
     const {
         params: { username, leagueId, teamId }
     } = req;
@@ -149,27 +149,28 @@ app.post('/:username/:platform/:leagueId/freeagents/roster', (req, res) => {
     });
     req.on('end', () => {
         const { rosterInfoList } = JSON.parse(body);
-        const dataRef = ref.child(
-            `data/${username}/${leagueId}/freeagents`
-        );
+        console.log(body)
+        // const dataRef = ref.child(
+        //     `data/${username}/${leagueId}/freeagents`
+        // );
         const players = {};
         rosterInfoList.forEach(player => {
             players[player.rosterId] = player;
         });
-        dataRef.set(players, error => {
-            if (error) {
-                console.log('Data could not be saved.' + error);
-            } else {
-                console.log('Data saved successfully.');
-            }
-        });
+        // dataRef.set(players, error => {
+        //     if (error) {
+        //         console.log('Data could not be saved.' + error);
+        //     } else {
+        //         console.log('Data saved successfully.');
+        //     }
+        // });
         res.sendStatus(200);
     });    
 });
 
-app.post('/:username/:platform/:leagueId/team/:teamId/roster', (req, res) => {
-    const db = admin.database();
-    const ref = db.ref();
+app.post('/:platform/:leagueId/team/:teamId/roster', (req, res) => {
+    // const db = admin.firestore();
+    // const ref = db.ref();
     const {
         params: { username, leagueId, teamId }
     } = req;
@@ -178,21 +179,22 @@ app.post('/:username/:platform/:leagueId/team/:teamId/roster', (req, res) => {
         body += chunk.toString();
     });
     req.on('end', () => {
+        console.log(body)
         const { rosterInfoList } = JSON.parse(body);
-        const dataRef = ref.child(
-            `data/${username}/${leagueId}/teams/${teamId}/roster`
-        );
+        // const dataRef = ref.child(
+        //     `data/${username}/${leagueId}/teams/${teamId}/roster`
+        // );
         const players = {};
         rosterInfoList.forEach(player => {
             players[player.rosterId] = player;
         });
-        dataRef.set(players, error => {
-            if (error) {
-                console.log('Data could not be saved.' + error);
-            } else {
-                console.log('Data saved successfully.');
-            }
-        });
+        // dataRef.set(players, error => {
+        //     if (error) {
+        //         console.log('Data could not be saved.' + error);
+        //     } else {
+        //         console.log('Data saved successfully.');
+        //     }
+        // });
         res.sendStatus(200);
     });
 });
