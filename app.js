@@ -110,9 +110,7 @@ app.post(
                 case 'schedules': {
                     const { gameScheduleInfoList: schedules } = JSON.parse(body);
 
-                    console.log(JSON.parse(body))
-
-                    mongoService.db(leagueId).collection("schedules").insertOne(schedules)
+                    mongoService.db(leagueId).collection("schedules").insertMany(schedules)
                     break;
                 }
                 case 'teamstats': {
