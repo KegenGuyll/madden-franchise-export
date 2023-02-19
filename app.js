@@ -129,7 +129,6 @@ app.post(
                         bulkTeamStats.insert({...stat, weekType, weekNumber})
                     });
 
-                    bulkTeamStats.execute()
                     break;
                 }
                 case 'defense': {
@@ -142,8 +141,6 @@ app.post(
                         // weekRef.set(stat);
                         bulkDefenseStats.insert({...stat, weekType, weekNumber})
                     });
-
-                    bulkDefenseStats.execute()
                     break;
                 }
                 default: {
@@ -157,15 +154,25 @@ app.post(
                         //     `${statsPath}/${weekType}/${weekNumber}/${stat.teamId}/player-stats/${stat.rosterId}`
                         // );
                         // weekRef.set(stat);
-                        bulkPlayerStats.insert({...stat, dataType, weekType, weekNumber})
+                        if(stat){
+                         bulkPlayerStats.insert({...stat, dataType, weekType, weekNumber})   
+                        }
+                        
                     });
                     break;
                 }
             }
 
-            await bulkDefenseStats.execute()
-            await bulkPlayerStats.execute()
-            await bulkTeamStats.execute()
+            if(bulkDefenseStats.length > 0){
+                await bulkDefenseStats.execute()  
+            }
+            if(bulkPlayerStats.length > 0){
+                await bulkPlayerStats.execute()   
+            }
+            if(bulkTeamStats.length > 0) {
+                await bulkTeamStats.execute()   
+            }
+
 
             res.sendStatus(200);
         });
