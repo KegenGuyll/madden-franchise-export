@@ -173,6 +173,8 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
     req.on('end', async () => {
         const { rosterInfoList } = JSON.parse(body);
 
+        console.log(JSON.parse(body))
+
         if(!rosterInfoList) {
             res.sendStatus('500')
             return
