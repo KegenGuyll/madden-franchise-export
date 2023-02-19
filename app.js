@@ -54,7 +54,8 @@ app.post('/:platform/:leagueId/leagueteams', (req, res) => {
 
     teams.forEach(team => {
       bulk.find({
-        teamId: team.teamId
+        teamId: team.teamId,
+        calendarYear: team.calendarYear
       }).upsert().replaceOne({
         ...team
       })
