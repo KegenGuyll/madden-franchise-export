@@ -161,55 +161,12 @@ function capitalizeFirstLetter(string) {
 // );
 
 // ROSTERS
-app.post('/:username/:platform/:leagueId/freeagents/roster', (req, res) => {
-    // const db = admin.firestore();
-    // const ref = db.ref();
+app.post('/:platform/:leagueId/freeagents', (req, res) => {
+    const bulk = mongoService.db(leagueId).collection('players').initializeUnorderedBulkOp()
     const {
         params: { username, leagueId, teamId }
     } = req;
     let body = '';
-    req.on('data', chunk => {
-        body += chunk.toString();
-    });
-    req.on('end', () => {
-        const { rosterInfoList } = JSON.parse(body);
-        console.log(body)
-        // const dataRef = ref.child(
-        //     `data/${username}/${leagueId}/freeagents`
-        // );
-        const players = {};
-        rosterInfoList.forEach(player => {
-            players[player.rosterId] = player;
-        });
-        // dataRef.set(players, error => {
-        //     if (error) {
-        //         console.log('Data could not be saved.' + error);
-        //     } else {
-        //         console.log('Data saved successfully.');
-        //     }
-        // });
-        res.sendStatus(200);
-    });    
-});
-
-app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
-
-    // const ref = db.ref();
-    const {
-        params: { username, leagueId, teamId }
-    } = req;
-    let body = '';
-
-    // db.collection('roster').doc(`${leagueId}`).set({
-    //     test: '2q3'
-    // })
-
-    const bulk = mongoService.db(leagueId).collection('rosters').initializeUnorderedBulkOp()
-
-    mongoService.db(leagueId).collection("rosters").insertOne({test: 123});
-
-   
-
     req.on('data', chunk => {
         body += chunk.toString();
     });
@@ -221,19 +178,40 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
             return
         }
 
-        // creating a key value pair
         rosterInfoList.forEach(player => {
-           bulk.insert({[player.rosterId]: player})
-            console.log('player inserted')
+            bulk.insert({...player})
+        });
+
+        await bulk.execute();
+        res.sendStatus(200);
+    });    
+});
+
+app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
+    const {
+        params: { username, leagueId, teamId }
+    } = req;
+    let body = '';
+
+    const bulk = mongoService.db(leagueId).collection('players').initializeUnorderedBulkOp()
+
+    req.on('data', chunk => {
+        body += chunk.toString();
+    });
+    req.on('end', async () => {
+        const { rosterInfoList } = JSON.parse(body);
+
+        if(!rosterInfoList) {
+            res.sendStatus('500')
+            return
+        }
+        
+        rosterInfoList.forEach(player => {
+           bulk.insert({...player})
         });
 
        await bulk.execute();
-
-
-        // setDoc(doc(db, "rosters", leagueId), {...players})
-        // .then(() => console.log('data added successfully'))
-        // .catch((err) => console.log('data failed', err));
-        res.sendStatus(200);
+       res.sendStatus(200);
     });
 });
 
