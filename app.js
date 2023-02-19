@@ -120,7 +120,6 @@ app.post(
 
 
     const bulkTeamStats = mongoService.db(leagueId).collection('teamstats').initializeUnorderedBulkOp()
-    const bulkDefenseStats = mongoService.db(leagueId).collection('defense').initializeUnorderedBulkOp()
     const bulkPlayerStats = mongoService.db(leagueId).collection('playerstats').initializeUnorderedBulkOp()
 
 
@@ -150,7 +149,7 @@ app.post(
             .replaceOne({
               ...stat,
               weekType,
-              weekNumber
+              weekNumber,
             })
           });
 
@@ -162,13 +161,14 @@ app.post(
           } = JSON.parse(body);
 
           defensiveStats.forEach(stat => {
-            bulkDefenseStats
+            bulkPlayerStats
             .find({statId: stat.statId})
             .upsert()
             .replaceOne({
               ...stat,
               weekType,
-              weekNumber
+              weekNumber,
+              dataType
             })
           });
           break;
