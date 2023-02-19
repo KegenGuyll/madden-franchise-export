@@ -34,7 +34,7 @@ app.get('*', (req, res) => {
   res.send('Madden Companion Exporter');
 });
 
-// LEAGUE INFO
+// LEAGUE INFO (TEAMS)
 app.post('/:platform/:leagueId/leagueteams', (req, res) => {
   const {
     params: {
@@ -54,8 +54,7 @@ app.post('/:platform/:leagueId/leagueteams', (req, res) => {
 
     teams.forEach(team => {
       bulk.find({
-        teamId: team.teamId,
-        calendarYear: team.calendarYear
+        teamId: team.teamId
       }).upsert().replaceOne({
         ...team
       })
@@ -67,7 +66,7 @@ app.post('/:platform/:leagueId/leagueteams', (req, res) => {
   });
 });
 
-// LEAGUE INFO
+// LEAGUE INFO (STANDINGS)
 app.post('/:platform/:leagueId/standings', (req, res) => {
   const {
     params: {
@@ -87,7 +86,9 @@ app.post('/:platform/:leagueId/standings', (req, res) => {
 
     teams.forEach(team => {
       bulk.find({
-        teamId: team.teamId
+        teamId: team.teamId,
+        calendarYear: team.calendarYear,
+        weekIndex: team.weekIndex
       }).upsert().replaceOne({
         ...team
       })
@@ -194,7 +195,7 @@ app.post(
           break;
         }
       }
-      
+
       if (bulkPlayerStats.length > 0) {
         await bulkPlayerStats.execute()
       }
