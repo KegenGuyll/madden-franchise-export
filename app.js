@@ -89,7 +89,6 @@ app.post('/:platform/:leagueId/standings', (req, res) => {
 
         teams.forEach(team => {
             bulk.find({teamId: team.teamId}).upsert().replaceOne({...team})
-            teamRef.set(team);
         });
 
         await bulk.execute();
