@@ -162,11 +162,12 @@ function capitalizeFirstLetter(string) {
 
 // ROSTERS
 app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
-    const bulk = mongoService.db(leagueId).collection('players').initializeUnorderedBulkOp()
     const {
         params: { username, leagueId, teamId }
     } = req;
     let body = '';
+
+    const bulk = mongoService.db(leagueId).collection('players').initializeUnorderedBulkOp()
     req.on('data', chunk => {
         body += chunk.toString();
     });
