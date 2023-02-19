@@ -49,47 +49,53 @@ app.get('*', (req, res) => {
     res.send('Madden Companion Exporter');
 });
 
-// app.post('/:username/:platform/:leagueId/leagueteams', (req, res) => {
-//     const db = admin.firestore();
-//     const ref = db.ref();
-//     let body = '';
-//     req.on('data', chunk => {
-//         body += chunk.toString();
-//     });
-//     req.on('end', () => {
-//         const { leagueTeamInfoList: teams } = JSON.parse(body);
-//         const {params: { username, leagueId }} = req;
+// LEAGUE INFO
+app.post('/:platform/:leagueId/leagueteams', (req, res) => {
+    const {
+        params: { leagueId }
+    } = req;
+    const bulk = mongoService.db(leagueId).collection('teams').initializeUnorderedBulkOp()
 
-//         teams.forEach(team => {
-//             const teamRef = ref.child(`data/${username}/${leagueId}/teams/${team.teamId}`);
-//             teamRef.set(team);
-//         });
+    let body = '';
+    req.on('data', chunk => {
+        body += chunk.toString();
+    });
+    req.on('end', async () => {
+        const { leagueTeamInfoList: teams } = JSON.parse(body);
 
-//         res.sendStatus(200);
-//     });
-// });
+        teams.forEach(team => {
+            bulk.find({teamId: team.teamId}).upsert().replaceOne({...team})
+        });
 
-// app.post('/:username/:platform/:leagueId/standings', (req, res) => {
-//     const db = admin.firestore();
-//     const ref = db.ref();
-//     let body = '';
-//     req.on('data', chunk => {
-//         body += chunk.toString();
-//     });
-//     req.on('end', () => {
-//         const { teamStandingInfoList: teams } = JSON.parse(body);
-//         const {params: { username, leagueId }} = req;
+        await bulk.execute();
 
-//         teams.forEach(team => {
-//             const teamRef = ref.child(
-//                 `data/${username}/${leagueId}/teams/${team.teamId}`
-//             );
-//             teamRef.set(team);
-//         });
+        res.sendStatus(200);
+    });
+});
 
-//         res.sendStatus(200);
-//     });
-// });
+// LEAGUE INFO
+app.post('/:platform/:leagueId/standings', (req, res) => {
+    const {
+        params: { leagueId }
+    } = req;
+
+    const bulk = mongoService.db(leagueId).collection('standings').initializeUnorderedBulkOp()
+    let body = '';
+    req.on('data', chunk => {
+        body += chunk.toString();
+    });
+    req.on('end', async () => {
+        const { teamStandingInfoList: teams } = JSON.parse(body);
+
+        teams.forEach(team => {
+            bulk.find({teamId: team.teamId}).upsert().replaceOne({...team})
+            teamRef.set(team);
+        });
+
+        await bulk.execute();
+        res.sendStatus(200);
+    });
+});
 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -168,6 +174,7 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
     let body = '';
 
     const bulk = mongoService.db(leagueId).collection('players').initializeUnorderedBulkOp()
+
     req.on('data', chunk => {
         body += chunk.toString();
     });
@@ -190,6 +197,7 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
     });    
 });
 
+// ROSTER
 app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
     const {
         params: { username, leagueId, teamId }
