@@ -194,10 +194,7 @@ app.post(
           break;
         }
       }
-
-      if (bulkDefenseStats.length > 0) {
-        await bulkDefenseStats.execute()
-      }
+      
       if (bulkPlayerStats.length > 0) {
         await bulkPlayerStats.execute()
       }
