@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
-  "author": "Josh Birdwell",
-  "license": "ISC",
+  "author": "Kegen Guyll",
+  "license": "MIT",
   "dependencies": {
     "body-parser": "^1.15.2",
     "dotenv": "^16.0.3",

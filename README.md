@@ -23,17 +23,21 @@ npm run start
 
 ## Setup
 
-### Create a firebase account and database
-Go here: http://firebase.google.com/ and create an account or login.
+### Create a mongodb account and database
+Go here: https://mongodb.com and create an account or login.
 Next, create an application.
 
-### Go into the app.js file & Complete the todos
-Commit the changes
+### Create .env file copy the information below
+
+- If you have trouble finding this information click the "connect" when viewing your db cluster
+- If you plan on hosting this make sure to whitelist the server ip or it won't work
+
 ```
-git add *
-git commit -m "Update app.js with firebase info"
-git Push
+DB_HOST="your_db_host"
+DB_PASS="your_db_pass"
+DB_USER="your_db_user"
 ```
+
 
 ### Create a Heroku project
 Go here: https://dashboard.heroku.com/ and create an account or login.
@@ -49,8 +53,6 @@ Dont forget your username. It needs a username to match up with the app.post rou
 The data will then be in your firebase database to do as you wish.
 Either download it or use the firebase database to power your website.
 
-### Clearing previous exports
-Clear all previous exports in your firebase db by opening the page 'http://\<yourapp\>.herokuapp.com/delete' in your web browser.
 
 ## Contributing
 
