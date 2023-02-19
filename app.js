@@ -108,24 +108,17 @@ app.post(
         req.on('end', async () => {
             switch (dataType) {
                 case 'schedules': {
-                    // const weekRef = ref.child(
-                    //     `${basePath}schedules/${weekType}/${weekNumber}`
-                    // );
-                    // const { gameScheduleInfoList: schedules } = JSON.parse(body);
-                    // weekRef.set(schedules);
+                    const { gameScheduleInfoList: schedules } = JSON.parse(body);
+
+                    console.log(JSON.parse(body))
 
                     mongoService.db(leagueId).collection("schedules").insertOne(schedules)
-
                     break;
                 }
                 case 'teamstats': {
                     
                     const { teamStatInfoList: teamStats } = JSON.parse(body);
                     teamStats.forEach(stat => {
-                        // const weekRef = ref.child(
-                        //     `${statsPath}/${weekType}/${weekNumber}/${stat.teamId}/team-stats`
-                        // );
-                        // weekRef.set(stat);
                         bulkTeamStats.insert({...stat, weekType, weekNumber})
                     });
 
@@ -135,10 +128,6 @@ app.post(
                     const { playerDefensiveStatInfoList: defensiveStats } = JSON.parse(body);
 
                     defensiveStats.forEach(stat => {
-                        // const weekRef = ref.child(
-                        //     `${statsPath}/${weekType}/${weekNumber}/${stat.teamId}/player-stats/${stat.rosterId}`
-                        // );
-                        // weekRef.set(stat);
                         bulkDefenseStats.insert({...stat, weekType, weekNumber})
                     });
                     break;
@@ -150,10 +139,6 @@ app.post(
                     const stats = JSON.parse(body)[property];
                     
                     stats.forEach(stat => {
-                        // const weekRef = ref.child(
-                        //     `${statsPath}/${weekType}/${weekNumber}/${stat.teamId}/player-stats/${stat.rosterId}`
-                        // );
-                        // weekRef.set(stat);
                         if(stat){
                          bulkPlayerStats.insert({...stat, dataType, weekType, weekNumber})   
                         }
