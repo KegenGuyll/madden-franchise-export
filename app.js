@@ -94,11 +94,18 @@ app.post(
         const basePath = `data/${username}/${leagueId}/`;
         // "defense", "kicking", "passing", "punting", "receiving", "rushing"
         const statsPath = `${basePath}stats`;
+
+
+        const bulkTeamStats = mongoService.db(leagueId).collection('teamstats').initializeUnorderedBulkOp()
+        const bulkDefenseStats = mongoService.db(leagueId).collection('defense').initializeUnorderedBulkOp()
+        const bulkPlayerStats = mongoService.db(leagueId).collection('playerstats').initializeUnorderedBulkOp()
+
+
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString();
         });
-        req.on('end', () => {
+        req.on('end', async () => {
             switch (dataType) {
                 case 'schedules': {
                     // const weekRef = ref.child(
@@ -112,31 +119,31 @@ app.post(
                     break;
                 }
                 case 'teamstats': {
-                    const bulk = mongoService.db(leagueId).collection('teamstats').initializeUnorderedBulkOp()
+                    
                     const { teamStatInfoList: teamStats } = JSON.parse(body);
                     teamStats.forEach(stat => {
                         // const weekRef = ref.child(
                         //     `${statsPath}/${weekType}/${weekNumber}/${stat.teamId}/team-stats`
                         // );
                         // weekRef.set(stat);
-                        bulk.insert(stat)
+                        bulkTeamStats.insert({...stat, weekType, weekNumber})
                     });
 
-                    bulk.execute()
+                    bulkTeamStats.execute()
                     break;
                 }
                 case 'defense': {
                     const { playerDefensiveStatInfoList: defensiveStats } = JSON.parse(body);
-                    const bulk = mongoService.db(leagueId).collection('defense').initializeUnorderedBulkOp()
+
                     defensiveStats.forEach(stat => {
                         // const weekRef = ref.child(
                         //     `${statsPath}/${weekType}/${weekNumber}/${stat.teamId}/player-stats/${stat.rosterId}`
                         // );
                         // weekRef.set(stat);
-                        bulk.insert(stat)
+                        bulkDefenseStats.insert({...stat, weekType, weekNumber})
                     });
 
-                    bulk.execute()
+                    bulkDefenseStats.execute()
                     break;
                 }
                 default: {
@@ -144,18 +151,21 @@ app.post(
                         dataType
                     )}StatInfoList`;
                     const stats = JSON.parse(body)[property];
-                    const bulk = mongoService.db(leagueId).collection(dataType).initializeUnorderedBulkOp()
+                    
                     stats.forEach(stat => {
                         // const weekRef = ref.child(
                         //     `${statsPath}/${weekType}/${weekNumber}/${stat.teamId}/player-stats/${stat.rosterId}`
                         // );
                         // weekRef.set(stat);
-                        bulk.insert(stat)
+                        bulkPlayerStats.insert({...stat, dataType, weekType, weekNumber})
                     });
-                    bulk.execute()
                     break;
                 }
             }
+
+            await bulkDefenseStats.execute()
+            await bulkPlayerStats.execute()
+            await bulkTeamStats.execute()
 
             res.sendStatus(200);
         });
