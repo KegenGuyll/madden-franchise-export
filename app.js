@@ -107,7 +107,7 @@ app.post(
                     // const { gameScheduleInfoList: schedules } = JSON.parse(body);
                     // weekRef.set(schedules);
 
-                    mongoService.db(leagueId).collection(schedules).insertOne(schedules)
+                    mongoService.db(leagueId).collection("schedules").insertOne(schedules)
 
                     break;
                 }
@@ -144,7 +144,7 @@ app.post(
                         dataType
                     )}StatInfoList`;
                     const stats = JSON.parse(body)[property];
-                    const bulk = mongoService.db(leagueId).collection('player-stats').initializeUnorderedBulkOp()
+                    const bulk = mongoService.db(leagueId).collection(dataType).initializeUnorderedBulkOp()
                     stats.forEach(stat => {
                         // const weekRef = ref.child(
                         //     `${statsPath}/${weekType}/${weekNumber}/${stat.teamId}/player-stats/${stat.rosterId}`
