@@ -1,12 +1,8 @@
 {
-  "type": "service_account",
-  "project_id": "madden-exporter-66efa",
-  "private_key_id": "37f53bee92df7f1a432d30e5f76de8d588132e6d",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCd03pTsJrb40tP\ngv8+7PDNDZKBbeFCZWGdcMcq+RlWkMGF3iA92B9Bg/kHqZ8fw5XycU85FcZivgBI\n0mlhsE6pcVO+uNo+QZtG4eR+Vy+F5Bwx0Qo4xVo7kN7wJj1jpafFZKrxMnG7UGdy\nmMViSlZWMFuPIrRct34Zavhfiqt5RRpdHofZppcV5BJ3q2qo1B4IUkD/cIWFkB/h\nirKQQf2b9gB1I7Qj8oVZ8Y176cWjle0cnmOCe5AWn8g38t4KiL1llVA6/TGxdrlh\n9O5J9x9I5hryzDWoR+NgpQ3d/vbhgioF8318yP1PClwlcYPdE1X5vdIti37+FpJI\n03we+RB7AgMBAAECggEAPXn61E6eg7htxXMJacFxqu32e2QJsos7EtCzRBHzxLxu\nJW74sB5XTnXRsyJnUUAmUGHCskHBHQVVpwgO9HZwrZ/vNwNaP5XeniWvk2byo/zO\n3rjGeoalNz6fGHxMvVvxlfo4e+tiUcxn/0Ny326FYt1DTOX/y33OKKh6Rv0E/h9H\n+DYC7Szb89FJsYbmqSQHIUkS6D5h/n+OlaoFbSKDSDON55xoXcezN3fSSDHlZmFL\nW4XjExQs41oZP/U6PtrYIKZOrkF4M5ZAQSwd181q1pXcMaSYdaEJghOSbyEItG2c\nUhFqGGcniXf79NzOJkmEmHFUqsPNqzdD4CqAHEkSQQKBgQDSyriEQOj+ffUC0xsM\nMKY3NYS2LC7Tf7NYO8J7H71UNZBFHwVrcSVCznQ2czhJsw47EmbsTgXfl+4pgXKZ\npxCY3huTfLsPTmrbC4UV/gw94aFQr0BgytTz8ktInZRxbArK+XFPFuo3NFyuGzXZ\n/qVCfgRDICO1nL/BMyVI+wrYBQKBgQC/rLuVVayTsWSd2speyjkhakRQfOvAVZdV\nbyRx7ra35MOx6xL47qZCoim6MVNnUZ29dr/dAGabewN79F7KfCC0+wQiGkaP7KYa\nl8bmS/cMXTvG5jxjFTDWh6apYuDbFcYlNZtUkS31B6t1l75SJrd0IrH3YoUlFoT0\noV6c+FsufwKBgQDSSXKyXZ8S481duASvsIjhYv62TnWYgTkFuPhXpF5Yd+cpTb02\nZnXpo9TDzUZGH97+h2kuLNgnK4Zo2b7eEpC4MDwKctCagHyRcXifbAYCZelseKkc\n5rxzcTAxjSLd1A8gVqD3acDWueILvxGGHEf5gYX3AUUelPWnY8K6f9ddkQKBgQC4\n0zwyvOFjrWvDV4VKsB803H6xSjQeS6pY5Io1HqWsX3hg6LdruNwzZqFr/EJbX3UG\njCpoVgmbJZxve22oPNdhDKeopsOh5uUowXA3A8tebczFd5+FP5rPUxDfRwxh1fYy\nTSXR/whcvZ+VDdSk7NZ7szT+wk53O+bK6YwNOuLZywKBgBZy/MtcDUbKYdkj4c/B\nhQOlrIgSQ4suFyuIg+hsVF3vnIbEaFs9/Y6I3+Drl2GGccdRyvCzQiLlME0q+P/N\ni8dH1HRDDPc617KGmxv+39S1HZWBm6ZcT2+jwoypRnKUcasP3XJuqCyL0zd2X8Lb\ne1etSv9qTZQsnJmGII1qnxGV\n-----END PRIVATE KEY-----\n",
-  "client_email": "firebase-adminsdk-rbp9j@madden-exporter-66efa.iam.gserviceaccount.com",
-  "client_id": "111055931814434659460",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-rbp9j%40madden-exporter-66efa.iam.gserviceaccount.com"
+  "apiKey": "AIzaSyAXoS5_CeiyawcH2ZTHedC5NgdKRFOl3qM",
+  "authDomain": "madden-exporter-66efa.firebaseapp.com",
+  "projectId": "madden-exporter-66efa",
+  "storageBucket": "madden-exporter-66efa.appspot.com",
+  "messagingSenderId": "716520881050",
+  "appId": "1:716520881050:web:ff614ef71d7dfd25df5823"
 }
