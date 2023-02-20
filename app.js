@@ -177,20 +177,18 @@ app.post(
         default: {
           const property = `player${capitalizeFirstLetter(dataType)}StatInfoList`;
           const stats = JSON.parse(body)[property];
-
-          console.log(JSON.parse(body))
-
           stats.forEach(stat => {
             if (stat) {
-              bulkPlayerStats
-              .find({statId: stat.statId})
-              .upsert()
-              .replaceOne({
-                ...stat,
-                dataType,
-                weekType,
-                weekNumber
-              })
+              // bulkPlayerStats
+              // .find({statId: stat.statId})
+              // .upsert()
+              // .replaceOne({
+              //   ...stat,
+              //   dataType,
+              //   weekType,
+              //   weekNumber
+              // })
+              bulkPlayerStats.insert({...stat, dataType, weekType, weekNumber})
             }
 
           });
