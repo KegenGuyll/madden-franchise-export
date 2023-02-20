@@ -178,6 +178,8 @@ app.post(
           const property = `player${capitalizeFirstLetter(dataType)}StatInfoList`;
           const stats = JSON.parse(body)[property];
 
+          console.log(JSON.parse(body))
+
           stats.forEach(stat => {
             if (stat) {
               bulkPlayerStats
