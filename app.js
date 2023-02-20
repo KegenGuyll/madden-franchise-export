@@ -180,7 +180,7 @@ app.post(
           stats.forEach(stat => {
             if (stat) {
               bulkPlayerStats
-              .find({statId: stat.statId, dataType, weekType, weekNumber})
+              .find({statId: stat.statId, dataType, weekType, weekNumber, seasonIndex})
               .upsert()
               .replaceOne({
                 ...stat,
