@@ -179,16 +179,15 @@ app.post(
           const stats = JSON.parse(body)[property];
           stats.forEach(stat => {
             if (stat) {
-              // bulkPlayerStats
-              // .find({statId: stat.statId})
-              // .upsert()
-              // .replaceOne({
-              //   ...stat,
-              //   dataType,
-              //   weekType,
-              //   weekNumber
-              // })
-              bulkPlayerStats.insert({...stat, dataType, weekType, weekNumber})
+              bulkPlayerStats
+              .find({statId: stat.statId, dataType, weekType, weekNumber})
+              .upsert()
+              .replaceOne({
+                ...stat,
+                dataType,
+                weekType,
+                weekNumber
+              })
             }
 
           });
