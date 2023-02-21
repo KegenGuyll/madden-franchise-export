@@ -142,6 +142,7 @@ app.post(
               weekIndex: schedule.weekIndex,
               weekType,
               weekNumber,
+              scheduleId: schedule.scheduleId
             })
             .upsert()
             .replaceOne({
@@ -159,7 +160,14 @@ app.post(
           } = JSON.parse(body);
           teamStats.forEach(stat => {
             bulkTeamStats
-            .find({statId: stat.statId})
+            .find({
+              seasonIndex: schedule.seasonIndex,
+              statId: stat.statId,               
+              weekIndex: schedule.weekIndex,
+              weekType,
+              weekNumber,
+              scheduleId: schedule.scheduleId
+            })
             .upsert()
             .replaceOne({
               ...stat,
@@ -177,7 +185,7 @@ app.post(
 
           defensiveStats.forEach(stat => {
             bulkPlayerStats
-            .find({statId: stat.statId})
+            .find({statId: stat.statId, dataType, weekType, weekNumber, seasonIndex: stat.seasonIndex})
             .upsert()
             .replaceOne({
               ...stat,
