@@ -161,12 +161,12 @@ app.post(
           teamStats.forEach(stat => {
             bulkTeamStats
             .find({
-              seasonIndex: schedule.seasonIndex,
+              seasonIndex: stat.seasonIndex,
               statId: stat.statId,               
-              weekIndex: schedule.weekIndex,
+              weekIndex: stat.weekIndex,
               weekType,
               weekNumber,
-              scheduleId: schedule.scheduleId
+              scheduleId: stat.scheduleId
             })
             .upsert()
             .replaceOne({
