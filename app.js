@@ -122,6 +122,7 @@ app.post(
 
     const bulkTeamStats = mongoService.db(leagueId).collection('teamstats').initializeUnorderedBulkOp()
     const bulkPlayerStats = mongoService.db(leagueId).collection('playerstats').initializeUnorderedBulkOp()
+    const bulkSchedules = mongoService.db(leagueId).collection('schedules').initializeUnorderedBulkOp()
 
 
     let body = '';
@@ -135,7 +136,20 @@ app.post(
             gameScheduleInfoList: schedules
           } = JSON.parse(body);
 
-          mongoService.db(leagueId).collection("schedules").insertMany(schedules)
+          schedules.forEach((schedule) => {
+            bulkSchedules.find({
+              seasonIndex: schedule.seasonIndex,
+              weekIndex: schedule.weekIndex,
+              weekType,
+              weekNumber,
+            })
+            .upsert()
+            .replaceOne({
+              ...schedule,
+              weekType,
+              weekNumber,
+            })
+          })
           break;
         }
         case 'teamstats': {
@@ -200,6 +214,9 @@ app.post(
       }
       if (bulkTeamStats.length > 0) {
         await bulkTeamStats.execute()
+      }
+      if(bulkSchedules.length > 0) {
+        await bulkSchedules.execute()
       }
 
 
