@@ -357,7 +357,7 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
         leagueId: leagueIdNumber
       }).upsert().replaceOne({
         ...player,
-        leagueIdNumber
+        leagueId: leagueIdNumber
       })
     });
 
@@ -400,7 +400,7 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
         leagueId: leagueIdNumber
       }).upsert().replaceOne({
         ...player,
-        leagueIdNumber
+        leagueId: leagueIdNumber
       })
     });
 
