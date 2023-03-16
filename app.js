@@ -299,12 +299,12 @@ app.post(
 
 
       await Promise.allSettled([
-        bulkPassingStats,
-        bulkRushingStats,
-        bulkReceivingStats,
-        bulkDefenseStats,
-        bulkKickingStats,
-        bulkPuntingStats
+        bulkPassingStats.execute(),
+        bulkRushingStats.execute(),
+        bulkReceivingStats.execute(),
+        bulkDefenseStats.execute(),
+        bulkKickingStats.execute(),
+        bulkPuntingStats.execute()
       ])
 
       if (bulkTeamStats.length > 0) {
