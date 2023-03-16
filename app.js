@@ -44,6 +44,7 @@ app.post('/:platform/:leagueId/leagueteams', (req, res) => {
     }
   } = req;
   const bulk = mongoService.db(databaseName).collection('teams').initializeUnorderedBulkOp()
+  const leagueIdNumber = Number(leagueId)
 
   let body = '';
   req.on('data', chunk => {
@@ -57,10 +58,10 @@ app.post('/:platform/:leagueId/leagueteams', (req, res) => {
     teams.forEach(team => {
       bulk.find({
         teamId: team.teamId,
-        leagueId
+        leagueId: leagueIdNumber
       }).upsert().replaceOne({
         ...team,
-        leagueId,
+        leagueId: leagueIdNumber,
         lastUpdated
       })
     });
@@ -79,6 +80,8 @@ app.post('/:platform/:leagueId/standings', (req, res) => {
     }
   } = req;
 
+  const leagueIdNumber = Number(leagueId)
+
   const bulk = mongoService.db(databaseName).collection('standings').initializeUnorderedBulkOp()
   let body = '';
   req.on('data', chunk => {
@@ -94,10 +97,10 @@ app.post('/:platform/:leagueId/standings', (req, res) => {
         teamId: team.teamId,
         calendarYear: team.calendarYear,
         weekIndex: team.weekIndex,
-        leagueId
+        leagueId: leagueIdNumber
       }).upsert().replaceOne({
         ...team,
-        leagueId,
+        leagueId: leagueIdNumber,
         lastUpdated
       })
     });
@@ -154,14 +157,14 @@ app.post(
               seasonIndex: schedule.seasonIndex,
               weekIndex: schedule.weekIndex,
               scheduleId: schedule.scheduleId,
-              leagueId
+              leagueId: leagueIdNumber
             })
             .upsert()
             .replaceOne({
               ...schedule,
               weekType,
               weekNumber: weekNumberNumber,
-              leagueId,
+              leagueId: leagueIdNumber,
               lastUpdated
             })
           })
