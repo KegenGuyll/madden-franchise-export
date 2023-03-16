@@ -334,7 +334,9 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
   } = req;
   let body = '';
 
-  const bulk = mongoService.db(leagueId).collection('players').initializeUnorderedBulkOp()
+  const bulk = mongoService.db(databaseName).collection('players').initializeUnorderedBulkOp()
+
+  const leagueIdNumber = Number(leagueId)
 
   req.on('data', chunk => {
     body += chunk.toString();
@@ -344,8 +346,6 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
       rosterInfoList
     } = JSON.parse(body);
 
-    console.log(JSON.parse(body))
-
     if (!rosterInfoList) {
       res.sendStatus('500')
       return
@@ -353,9 +353,11 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
 
     rosterInfoList.forEach(player => {
       bulk.find({
-        rosterId: player.rosterId
+        rosterId: player.rosterId,
+        leagueId: leagueIdNumber
       }).upsert().replaceOne({
-        ...player
+        ...player,
+        leagueIdNumber
       })
     });
 
@@ -375,7 +377,9 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
   } = req;
   let body = '';
 
-  const bulk = mongoService.db(leagueId).collection('players').initializeUnorderedBulkOp()
+  const bulk = mongoService.db(databaseName).collection('players').initializeUnorderedBulkOp()
+
+  const leagueIdNumber = Number(leagueId)
 
   req.on('data', chunk => {
     body += chunk.toString();
@@ -392,9 +396,11 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
 
     rosterInfoList.forEach(player => {
       bulk.find({
-        rosterId: player.rosterId
+        rosterId: player.rosterId,
+        leagueId: leagueIdNumber
       }).upsert().replaceOne({
-        ...player
+        ...player,
+        leagueIdNumber
       })
     });
 
