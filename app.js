@@ -11,6 +11,8 @@ const host = process.env.DB_HOST;
 
 const uri = `mongodb+srv://${user}:${password}@${host}`;
 
+const databaseName = process.env.DB_NAME
+
 const mongoService = new MongoClient(uri);
 
 const connectMongoDb = () => {
@@ -41,7 +43,7 @@ app.post('/:platform/:leagueId/leagueteams', (req, res) => {
       leagueId
     }
   } = req;
-  const bulk = mongoService.db(leagueId).collection('teams').initializeUnorderedBulkOp()
+  const bulk = mongoService.db(databaseName).collection('teams').initializeUnorderedBulkOp()
 
   let body = '';
   req.on('data', chunk => {
@@ -54,9 +56,11 @@ app.post('/:platform/:leagueId/leagueteams', (req, res) => {
 
     teams.forEach(team => {
       bulk.find({
-        teamId: team.teamId
+        teamId: team.teamId,
+        leagueId
       }).upsert().replaceOne({
-        ...team
+        ...team,
+        leagueId
       })
     });
 
@@ -74,7 +78,7 @@ app.post('/:platform/:leagueId/standings', (req, res) => {
     }
   } = req;
 
-  const bulk = mongoService.db(leagueId).collection('standings').initializeUnorderedBulkOp()
+  const bulk = mongoService.db(databaseName).collection('standings').initializeUnorderedBulkOp()
   let body = '';
   req.on('data', chunk => {
     body += chunk.toString();
@@ -88,9 +92,11 @@ app.post('/:platform/:leagueId/standings', (req, res) => {
       bulk.find({
         teamId: team.teamId,
         calendarYear: team.calendarYear,
-        weekIndex: team.weekIndex
+        weekIndex: team.weekIndex,
+        leagueId
       }).upsert().replaceOne({
-        ...team
+        ...team,
+        leagueId
       })
     });
 
@@ -115,14 +121,19 @@ app.post(
         dataType
       },
     } = req;
-    const basePath = `data/${username}/${leagueId}/`;
-    // "defense", "kicking", "passing", "punting", "receiving", "rushing"
-    const statsPath = `${basePath}stats`;
 
+    const bulkTeamStats = mongoService.db(databaseName).collection('teamstats').initializeUnorderedBulkOp()
+    const bulkPassingStats = mongoService.db(databaseName).collection('statsPassing').initializeUnorderedBulkOp()
+    const bulkRushingStats = mongoService.db(databaseName).collection('statsRushing').initializeUnorderedBulkOp()
+    const bulkReceivingStats = mongoService.db(databaseName).collection('statsReceiving').initializeUnorderedBulkOp()
+    const bulkDefenseStats = mongoService.db(databaseName).collection('statsDefense').initializeUnorderedBulkOp()
+    const bulkKickingStats = mongoService.db(databaseName).collection('statsKicking').initializeUnorderedBulkOp()
+    const bulkPuntingStats = mongoService.db(databaseName).collection('statsPunting').initializeUnorderedBulkOp()
 
-    const bulkTeamStats = mongoService.db(leagueId).collection('teamstats').initializeUnorderedBulkOp()
-    const bulkPlayerStats = mongoService.db(leagueId).collection('playerstats').initializeUnorderedBulkOp()
-    const bulkSchedules = mongoService.db(leagueId).collection('schedules').initializeUnorderedBulkOp()
+    const bulkSchedules = mongoService.db(databaseName).collection('schedules').initializeUnorderedBulkOp()
+
+    const leagueIdNumber = Number(leagueId)
+    const weekNumberNumber = Number(weekNumber)
 
 
     let body = '';
@@ -140,15 +151,15 @@ app.post(
             bulkSchedules.find({
               seasonIndex: schedule.seasonIndex,
               weekIndex: schedule.weekIndex,
-              weekType,
-              weekNumber,
-              scheduleId: schedule.scheduleId
+              scheduleId: schedule.scheduleId,
+              leagueId
             })
             .upsert()
             .replaceOne({
               ...schedule,
               weekType,
-              weekNumber,
+              weekNumber: weekNumberNumber,
+              leagueId
             })
           })
           break;
@@ -165,14 +176,16 @@ app.post(
               statId: stat.statId,               
               weekIndex: stat.weekIndex,
               weekType,
-              weekNumber,
-              scheduleId: stat.scheduleId
+              weekNumber: weekNumberNumber,
+              scheduleId: stat.scheduleId,
+              leagueId: leagueIdNumber
             })
             .upsert()
             .replaceOne({
               ...stat,
               weekType,
-              weekNumber,
+              weekNumber: weekNumberNumber,
+              leagueId: leagueIdNumber
             })
           });
 
@@ -184,14 +197,14 @@ app.post(
           } = JSON.parse(body);
 
           defensiveStats.forEach(stat => {
-            bulkPlayerStats
-            .find({statId: stat.statId, dataType, weekType, weekNumber, seasonIndex: stat.seasonIndex})
+            bulkDefenseStats
+            .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
             .upsert()
             .replaceOne({
               ...stat,
               weekType,
-              weekNumber,
-              dataType
+              leagueId: leagueIdNumber,
+              weekNumber: weekNumberNumber
             })
           });
           break;
@@ -201,25 +214,88 @@ app.post(
           const stats = JSON.parse(body)[property];
           stats.forEach(stat => {
             if (stat) {
-              bulkPlayerStats
-              .find({statId: stat.statId, dataType, weekType, weekNumber, seasonIndex: stat.seasonIndex})
-              .upsert()
-              .replaceOne({
-                ...stat,
-                dataType,
-                weekType,
-                weekNumber
-              })
+              if (dataType === 'passing') {
+                bulkPassingStats
+                .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .upsert()
+                .replaceOne({
+                  ...stat,
+                  weekType,
+                  leagueId: leagueIdNumber,
+                  weekNumber: weekNumberNumber
+                })
+              }
+              if (dataType === 'rushing') {
+                bulkRushingStats
+                .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .upsert()
+                .replaceOne({
+                  ...stat,
+                  weekType,
+                  leagueId: leagueIdNumber,
+                  weekNumber: weekNumberNumber
+                })
+              }
+              if (dataType === 'receiving') {
+                bulkReceivingStats
+                .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .upsert()
+                .replaceOne({
+                  ...stat,
+                  weekType,
+                  leagueId: leagueIdNumber,
+                  weekNumber: weekNumberNumber
+                })
+              }
+              if (dataType === 'defense') {
+                bulkDefenseStats
+                .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .upsert()
+                .replaceOne({
+                  ...stat,
+                  weekType,
+                  leagueId: leagueIdNumber,
+                  weekNumber: weekNumberNumber
+                })
+              }
+              if (dataType === 'kicking') {
+                bulkKickingStats
+                .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .upsert()
+                .replaceOne({
+                  ...stat,
+                  weekType,
+                  leagueId: leagueIdNumber,
+                  weekNumber: weekNumberNumber
+                })
+              }
+              if (dataType === 'punting') {
+                bulkPuntingStats
+                .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .upsert()
+                .replaceOne({
+                  ...stat,
+                  weekType,
+                  leagueId: leagueIdNumber,
+                  weekNumber: weekNumberNumber
+                })
+              }
             }
-
           });
           break;
         }
       }
 
-      if (bulkPlayerStats.length > 0) {
-        await bulkPlayerStats.execute()
-      }
+
+      await Promise.allSettled([
+        bulkPassingStats,
+        bulkRushingStats,
+        bulkReceivingStats,
+        bulkDefenseStats,
+        bulkKickingStats,
+        bulkPuntingStats
+      ])
+
       if (bulkTeamStats.length > 0) {
         await bulkTeamStats.execute()
       }
