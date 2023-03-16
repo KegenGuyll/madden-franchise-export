@@ -12,7 +12,7 @@ const host = process.env.DB_HOST;
 const uri = `mongodb+srv://${user}:${password}@${host}`;
 
 const databaseName = process.env.DB_NAME
-
+const lastUpdated = new Date()
 const mongoService = new MongoClient(uri);
 
 const connectMongoDb = () => {
@@ -60,7 +60,8 @@ app.post('/:platform/:leagueId/leagueteams', (req, res) => {
         leagueId
       }).upsert().replaceOne({
         ...team,
-        leagueId
+        leagueId,
+        lastUpdated
       })
     });
 
@@ -96,7 +97,8 @@ app.post('/:platform/:leagueId/standings', (req, res) => {
         leagueId
       }).upsert().replaceOne({
         ...team,
-        leagueId
+        leagueId,
+        lastUpdated
       })
     });
 
@@ -159,7 +161,8 @@ app.post(
               ...schedule,
               weekType,
               weekNumber: weekNumberNumber,
-              leagueId
+              leagueId,
+              lastUpdated
             })
           })
           break;
@@ -185,7 +188,8 @@ app.post(
               ...stat,
               weekType,
               weekNumber: weekNumberNumber,
-              leagueId: leagueIdNumber
+              leagueId: leagueIdNumber,
+              lastUpdated
             })
           });
 
@@ -204,7 +208,8 @@ app.post(
               ...stat,
               weekType,
               leagueId: leagueIdNumber,
-              weekNumber: weekNumberNumber
+              weekNumber: weekNumberNumber,
+              lastUpdated
             })
           });
           break;
@@ -222,7 +227,8 @@ app.post(
                   ...stat,
                   weekType,
                   leagueId: leagueIdNumber,
-                  weekNumber: weekNumberNumber
+                  weekNumber: weekNumberNumber,
+                  lastUpdated
                 })
               }
               if (dataType === 'rushing') {
@@ -233,7 +239,8 @@ app.post(
                   ...stat,
                   weekType,
                   leagueId: leagueIdNumber,
-                  weekNumber: weekNumberNumber
+                  weekNumber: weekNumberNumber,
+                  lastUpdated
                 })
               }
               if (dataType === 'receiving') {
@@ -244,7 +251,8 @@ app.post(
                   ...stat,
                   weekType,
                   leagueId: leagueIdNumber,
-                  weekNumber: weekNumberNumber
+                  weekNumber: weekNumberNumber,
+                  lastUpdated
                 })
               }
               if (dataType === 'defense') {
@@ -255,7 +263,8 @@ app.post(
                   ...stat,
                   weekType,
                   leagueId: leagueIdNumber,
-                  weekNumber: weekNumberNumber
+                  weekNumber: weekNumberNumber,
+                  lastUpdated
                 })
               }
               if (dataType === 'kicking') {
@@ -266,7 +275,8 @@ app.post(
                   ...stat,
                   weekType,
                   leagueId: leagueIdNumber,
-                  weekNumber: weekNumberNumber
+                  weekNumber: weekNumberNumber,
+                  lastUpdated
                 })
               }
               if (dataType === 'punting') {
@@ -277,7 +287,8 @@ app.post(
                   ...stat,
                   weekType,
                   leagueId: leagueIdNumber,
-                  weekNumber: weekNumberNumber
+                  weekNumber: weekNumberNumber,
+                  lastUpdated
                 })
               }
             }
