@@ -202,7 +202,7 @@ app.post(
 
           defensiveStats.forEach(stat => {
             bulkDefenseStats
-            .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+            .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
             .upsert()
             .replaceOne({
               ...stat,
@@ -221,7 +221,7 @@ app.post(
             if (stat) {
               if (dataType === 'passing') {
                 bulkPassingStats
-                .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
                 .upsert()
                 .replaceOne({
                   ...stat,
@@ -233,7 +233,7 @@ app.post(
               }
               if (dataType === 'rushing') {
                 bulkRushingStats
-                .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
                 .upsert()
                 .replaceOne({
                   ...stat,
@@ -245,7 +245,7 @@ app.post(
               }
               if (dataType === 'receiving') {
                 bulkReceivingStats
-                .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
                 .upsert()
                 .replaceOne({
                   ...stat,
@@ -257,7 +257,7 @@ app.post(
               }
               if (dataType === 'defense') {
                 bulkDefenseStats
-                .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
                 .upsert()
                 .replaceOne({
                   ...stat,
@@ -269,7 +269,7 @@ app.post(
               }
               if (dataType === 'kicking') {
                 bulkKickingStats
-                .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
                 .upsert()
                 .replaceOne({
                   ...stat,
@@ -281,7 +281,7 @@ app.post(
               }
               if (dataType === 'punting') {
                 bulkPuntingStats
-                .find({statId: stat.statId, weekType, weekIndex: state.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
                 .upsert()
                 .replaceOne({
                   ...stat,
