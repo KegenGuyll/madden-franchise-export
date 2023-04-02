@@ -46,4 +46,4 @@ const compareObject = (curr, update) => {
   return newObject
 }
 
-export default compareObject
+module.exports = {compareObject}

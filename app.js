@@ -4,7 +4,7 @@ require("dotenv").config();
 const {
   MongoClient
 } = require('mongodb');
-const { default: compareObject } = require('./utils/compare');
+const { compareObject } = require('./utils/compare');
 
 const user = process.env.DB_USER;
 const password = process.env.DB_PASS;
