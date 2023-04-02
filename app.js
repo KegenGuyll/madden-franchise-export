@@ -3,7 +3,8 @@ require("dotenv").config();
 
 const {
   MongoClient
-} = require('mongodb')
+} = require('mongodb');
+const { default: compareObject } = require('./utils/compare');
 
 const user = process.env.DB_USER;
 const password = process.env.DB_PASS;
@@ -377,7 +378,7 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
   } = req;
   let body = '';
 
-  const bulk = mongoService.db(databaseName).collection('players').initializeUnorderedBulkOp()
+  const db = mongoService.db(databaseName).collection('players')
 
   const leagueIdNumber = Number(leagueId)
 
@@ -394,17 +395,25 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
       return
     }
 
-    rosterInfoList.forEach(player => {
-      bulk.find({
-        rosterId: player.rosterId,
-        leagueId: leagueIdNumber
-      }).upsert().replaceOne({
-        ...player,
-        leagueId: leagueIdNumber
-      })
-    });
+    await Promise.all(rosterInfoList.map(async (player) => {
+      const content = await db.find({rosterId: player.rosterId, leagueId: leagueIdNumber})
 
-    await bulk.execute();
+      if(content) {
+
+       const result = compareObject(content, player)
+
+       db.updateOne({_id: content._id}, {...result})
+
+      } else {
+        db.insertOne({
+          ...player,
+          leagueId: leagueIdNumber
+        })
+      }
+
+
+    }))
+
     res.sendStatus(200);
   });
 });
