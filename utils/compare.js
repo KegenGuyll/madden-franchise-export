@@ -45,7 +45,7 @@ const compareObject = (curr, update) => {
       if(isDiff(curr[key], update[key])){
         newObject[key] = [
           {
-            [key]: firstElementUpdate,
+            [key]: update[key],
             version: 2,
             date
           },
