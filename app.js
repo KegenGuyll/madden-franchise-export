@@ -398,6 +398,8 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
     await Promise.all(rosterInfoList.map(async (player) => {
       const content = await db.find({rosterId: player.rosterId, leagueId: leagueIdNumber})
 
+      console.log(content)
+
       if(content) {
 
        const result = compareObject(content, player)

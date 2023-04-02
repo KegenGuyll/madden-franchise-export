@@ -1,5 +1,6 @@
 
 const isDiff = (a, b) => {
+  console.log(a, b)
   if (String(a) === String(b)) {
     return false
   }
