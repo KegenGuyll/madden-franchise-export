@@ -7,6 +7,9 @@ const isDiff = (a, b) => {
   return true
 }
 
+function isObject(objValue) {
+  return objValue && typeof objValue === 'object' && objValue.constructor === Object;
+}
 
 const compareObject = (curr, update) => {
   const newObject = {}
@@ -14,7 +17,13 @@ const compareObject = (curr, update) => {
   Object.keys(curr).forEach((key) => {
     if(Array.isArray(curr[key])){
       // latest version of element
-      const firstElement = curr[key]
+
+      let firstElement = curr[key]
+
+      // to prevent same value but different version
+      if(isObject(firstElement)) {
+        firstElement = Object.values(firstElement)[0]
+      }
 
       if(isDiff(firstElement, update[key])){
         newObject[key] = [
