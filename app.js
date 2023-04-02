@@ -402,6 +402,11 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
 
        const result = compareObject(content, player)
 
+       if(result._id){
+        delete result._id
+       }
+
+
        await db.updateOne({_id: content._id}, [{$set: {...result}}])
 
       } else {
