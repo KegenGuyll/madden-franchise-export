@@ -402,7 +402,7 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
 
        const result = compareObject(content, player)
 
-       await db.updateOne({_id: content._id}, {...result})
+       await db.updateOne({_id: content._id}, [{$set: {...result}}])
 
       } else {
         await  db.insertOne({
