@@ -13,6 +13,7 @@ function isObject(objValue) {
 
 const compareObject = (curr, update) => {
   const newObject = {}
+  const date = new Date()
 
   Object.keys(curr).forEach((key) => {
     if(Array.isArray(curr[key])){
@@ -34,7 +35,8 @@ const compareObject = (curr, update) => {
         newObject[key] = [
           {
             [key]: firstElementUpdate,
-            version: curr[key].length + 1
+            version: curr[key].length + 1,
+            date
           },
           ...curr[key]
         ]
@@ -44,11 +46,13 @@ const compareObject = (curr, update) => {
         newObject[key] = [
           {
             [key]: firstElementUpdate,
-            version: 2
+            version: 2,
+            date
           },
           {
             [key]: curr[key],
-            version: 1
+            version: 1,
+            date
           }
         ]
       } else {
