@@ -400,7 +400,7 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
 
       if(content) {
 
-       const result = compareObject(content, player)
+       const result = compareObject(content, {...player, leagueId: leagueIdNumber})
 
        if(result._id){
         delete result._id
