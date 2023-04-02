@@ -335,7 +335,7 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
   } = req;
   let body = '';
 
-  const bulk = mongoService.db(databaseName).collection('players').initializeUnorderedBulkOp()
+  const db = mongoService.db(databaseName).collection('players')
 
   const leagueIdNumber = Number(leagueId)
 
@@ -352,17 +352,30 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
       return
     }
 
-    rosterInfoList.forEach(player => {
-      bulk.find({
-        rosterId: player.rosterId,
-        leagueId: leagueIdNumber
-      }).upsert().replaceOne({
-        ...player,
-        leagueId: leagueIdNumber
-      })
-    });
+    await Promise.all(rosterInfoList.map(async (player) => {
+      const content = await db.findOne({rosterId: player.rosterId, leagueId: leagueIdNumber})
 
-    await bulk.execute();
+      if(content) {
+
+       const result = compareObject(content, {...player, leagueId: leagueIdNumber})
+
+       if(result._id){
+        delete result._id
+       }
+
+
+       await db.updateOne({_id: content._id}, [{$set: {...result}}])
+
+      } else {
+        await  db.insertOne({
+          ...player,
+          leagueId: leagueIdNumber
+        })
+      }
+
+
+    }))
+
     res.sendStatus(200);
   });
 });
