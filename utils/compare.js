@@ -42,7 +42,7 @@ const compareObject = (curr, update) => {
         ]
       }
     } else {
-      if(isDiff(curr[key],firstElementUpdate)){
+      if(isDiff(curr[key], update[key])){
         newObject[key] = [
           {
             [key]: firstElementUpdate,
