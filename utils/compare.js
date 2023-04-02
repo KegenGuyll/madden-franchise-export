@@ -18,27 +18,32 @@ const compareObject = (curr, update) => {
     if(Array.isArray(curr[key])){
       // latest version of element
 
-      let firstElement = curr[key]
+      let firstElementCurr = curr[key]
+      let firstElementUpdate = update[key]
 
       // to prevent same value but different version
-      if(isObject(firstElement)) {
-        firstElement = Object.values(firstElement)[0]
+      if(isObject(firstElementCurr)) {
+        firstElementCurr = Object.values(firstElementCurr)[0][key]
       }
 
-      if(isDiff(firstElement, update[key])){
+      if(isObject(firstElementUpdate)){
+        firstElementUpdate = Object.values(firstElementUpdate)[0][key]
+      }
+
+      if(isDiff(firstElementCurr, firstElementUpdate)){
         newObject[key] = [
           {
-            [key]: update[key],
+            [key]: firstElementUpdate,
             version: curr[key].length + 1
           },
           ...curr[key]
         ]
       }
     } else {
-      if(isDiff(curr[key], update[key])){
+      if(isDiff(curr[key],firstElementUpdate)){
         newObject[key] = [
           {
-            [key]: update[key],
+            [key]: firstElementUpdate,
             version: 2
           },
           {
