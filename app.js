@@ -400,9 +400,10 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
   });
   req.on('end', async () => {
     const {
-      rosterInfoList
+      rosterInfoList,
+      message
     } = JSON.parse(body);
-    console.log(Object.keys(JSON.parse(body)))
+    console.log(message)
 
     if (!rosterInfoList) {
       res.sendStatus('500')
