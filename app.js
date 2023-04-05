@@ -402,6 +402,7 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
     const {
       rosterInfoList
     } = JSON.parse(body);
+    console.log(Object.keys(JSON.parse(body)))
 
     if (!rosterInfoList) {
       res.sendStatus('500')
@@ -418,7 +419,6 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
        if(result._id){
         delete result._id
        }
-
 
        await db.updateOne({_id: content._id}, [{$set: {...result}}])
 
