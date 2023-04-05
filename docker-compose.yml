@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  madden-companion-exporter:
+    container_name: madden-exporter
+    restart: always
+    build: './packages/madden-companion-exporter'
+    expose: 
+      - '8080'
+    ports:
+      - '8080:8080'  
+    links:
+      - redis  
+  player-difference:
+    container_name: player-difference
+    restart: always
+    build: './packages/player-difference'
+    links: 
+     - redis 
+  redis:
+    container_name: redis
+    image: "redis:alpine"
+    command: redis-server --requirepass ${REDIS_PASS:-password123}
+    expose:
+     - "6379"
+    volumes:
+      - redis-data:/data
+      - redis-conf:/usr/local/etc/redis/redis.conf
+volumes:
+  redis-data:
+  redis-conf:
