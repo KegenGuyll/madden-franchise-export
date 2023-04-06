@@ -1,5 +1,6 @@
 const redis = require("redis");
 const { MongoClient } = require("mongodb");
+const { transaction } = require("./transaction");
 require("dotenv").config();
 
 const user = process.env.DB_USER;
@@ -76,6 +77,7 @@ const listener = async (message, channel) => {
                 { rosterId, leagueId },
                 { $set: { ...history } }
               );
+              await transaction({newData, oldData, key, rosterId, leagueId})
             } else {
               const history = {
                 ...playerHistory,
@@ -88,10 +90,13 @@ const listener = async (message, channel) => {
                 ],
               };
 
+
+
               await db.updateOne(
                 { rosterId, leagueId },
                 { $set: { ...history } }
               );
+              await transaction({newData, oldData, key, rosterId, leagueId})
             }
 
             console.log("updated");
