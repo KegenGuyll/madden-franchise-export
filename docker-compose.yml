@@ -6,8 +6,6 @@ services:
     build: './packages/madden-companion-exporter'
     expose: 
       - '8080'
-    ports:
-      - '8080:8080'  
     links:
       - redis  
   player-difference:
@@ -25,6 +23,28 @@ services:
     volumes:
       - redis-data:/data
       - redis-conf:/usr/local/etc/redis/redis.conf
+  nginx-proxy-2:
+    container_name: nginx_container-2
+    restart: always
+    image: jwilder/nginx-proxy
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - '/etc/nginx/vhost.d'
+      - '/usr/share/nginx/html'
+      - '/var/run/docker.sock:/tmp/docker.sock:ro'
+      - '/etc/nginx/certs'
+    depends_on:
+      - madden-companion-exporter
+  letsencrypt-nginx-proxy-companion-2:
+    container_name: letsencrypt-2
+    restart: always
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    volumes_from:
+      - 'nginx-proxy-2'      
 volumes:
   redis-data:
   redis-conf:
