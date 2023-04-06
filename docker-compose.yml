@@ -4,6 +4,9 @@ services:
     container_name: madden-exporter
     restart: always
     build: './packages/madden-companion-exporter'
+    environment:
+      VIRTUAL_HOST: test.tmrev.io
+      LETSENCRYPT_HOST: test.tmrev.io
     expose: 
       - '8080'
     links:
