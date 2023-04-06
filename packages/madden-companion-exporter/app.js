@@ -407,73 +407,27 @@ app.post(
 // ROSTERS
 app.post("/:platform/:leagueId/freeagents/roster", (req, res) => {
   const {
-    params: { username, leagueId, teamId },
+    params: { username, leagueId, teamId, platform },
   } = req;
   let body = "";
+
+  console.log(`/${platform}/${leagueId}/team/${teamId}/roster`)
 
   const db = mongoService.db(databaseName).collection("players");
 
   const leagueIdNumber = Number(leagueId);
 
   req.on("data", (chunk) => {
-    body += chunk.toString();
-  });
-  req.on("end", async () => {
-    const { rosterInfoList } = JSON.parse(body);
-
-    if (!rosterInfoList) {
-      res.sendStatus("500");
-      return;
-    }
-
-    await Promise.all(
-      rosterInfoList.map(async (player) => {
-        const content = await db.findOne({
-          rosterId: player.rosterId,
-          leagueId: leagueIdNumber,
-        });
-
-        if (content) {
-          const result = compareObject(content, {
-            ...player,
-            leagueId: leagueIdNumber,
-          });
-
-          if (result._id) {
-            delete result._id;
-          }
-
-          await db.updateOne({ _id: content._id }, [{ $set: { ...result } }]);
-        } else {
-          await db.insertOne({
-            ...player,
-            leagueId: leagueIdNumber,
-          });
-        }
-      })
-    );
-
-    res.sendStatus(200);
-  });
-});
-
-// ROSTER
-app.post("/:platform/:leagueId/team/:teamId/roster", async (req, res) => {
-  const {
-    params: { username, leagueId, teamId },
-  } = req;
-  let body = "";
-
-  const db = mongoService.db(databaseName).collection("players");
-
-  const leagueIdNumber = Number(leagueId);
-
-  req.on("data", (chunk) => {
+    console.log('process data')
     body += chunk.toString();
   });
   req.on("end", async () => {
     try {
-      const { rosterInfoList, message } = JSON.parse(body);
+      
+      console.log('ready to begin ingest')
+      const { rosterInfoList, message, success } = JSON.parse(body);
+      console.log(`message: ${message}`)
+      console.log('success:', success)
 
       if (!rosterInfoList) {
         res.sendStatus("500");
@@ -483,17 +437,20 @@ app.post("/:platform/:leagueId/team/:teamId/roster", async (req, res) => {
       const id = await leagueIdCollection.findOne({ leagueId });
 
       if (!id) {
+        console.log('insert leagueId')
         await leagueIdCollection.insertOne({ leagueId });
       }
 
       await Promise.all(
         rosterInfoList.map(async (player) => {
+          console.log('find player')
           const content = await db.findOne({
             rosterId: player.rosterId,
             leagueId: leagueIdNumber,
           });
 
           if (content) {
+            console.log('found player')
             const result = compareObject(content, {
               ...player,
               leagueId: leagueIdNumber,
@@ -504,14 +461,100 @@ app.post("/:platform/:leagueId/team/:teamId/roster", async (req, res) => {
             }
 
             if(result.length){
+              console.log('publish redis channel')
               await redisService.publish(leagueId, JSON.stringify(result));
             }
 
+            console.log('update player')
             await db.updateOne({
               rosterId: player.rosterId,
               leagueId: leagueIdNumber,
             }, [{ $set: { ...player, leagueId: leagueIdNumber } }]);
           } else {
+            console.log('create player')
+            await db.insertOne({
+              ...player,
+              leagueId: leagueIdNumber,
+            });
+          }
+        })
+      );
+
+      res.sendStatus(200);
+    } catch (error) {
+      console.log(error);
+    }
+  });
+});
+
+// ROSTER
+app.post("/:platform/:leagueId/team/:teamId/roster", async (req, res) => {
+  const {
+    params: { username, leagueId, teamId, platform },
+  } = req;
+  let body = "";
+
+  console.log(`/${platform}/${leagueId}/team/${teamId}/roster`)
+
+  const db = mongoService.db(databaseName).collection("players");
+
+  const leagueIdNumber = Number(leagueId);
+
+  req.on("data", (chunk) => {
+    console.log('process data')
+    body += chunk.toString();
+  });
+  req.on("end", async () => {
+    try {
+      
+      console.log('ready to begin ingest')
+      const { rosterInfoList, message, success } = JSON.parse(body);
+      console.log(`message: ${message}`)
+      console.log('success:', success)
+
+      if (!rosterInfoList) {
+        res.sendStatus("500");
+        return;
+      }
+
+      const id = await leagueIdCollection.findOne({ leagueId });
+
+      if (!id) {
+        console.log('insert leagueId')
+        await leagueIdCollection.insertOne({ leagueId });
+      }
+
+      await Promise.all(
+        rosterInfoList.map(async (player) => {
+          console.log('find player')
+          const content = await db.findOne({
+            rosterId: player.rosterId,
+            leagueId: leagueIdNumber,
+          });
+
+          if (content) {
+            console.log('found player')
+            const result = compareObject(content, {
+              ...player,
+              leagueId: leagueIdNumber,
+            }, leagueIdNumber);
+
+            if (result._id) {
+              delete result._id;
+            }
+
+            if(result.length){
+              console.log('publish redis channel')
+              await redisService.publish(leagueId, JSON.stringify(result));
+            }
+
+            console.log('update player')
+            await db.updateOne({
+              rosterId: player.rosterId,
+              leagueId: leagueIdNumber,
+            }, [{ $set: { ...player, leagueId: leagueIdNumber } }]);
+          } else {
+            console.log('create player')
             await db.insertOne({
               ...player,
               leagueId: leagueIdNumber,
