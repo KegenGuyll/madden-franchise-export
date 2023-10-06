@@ -152,6 +152,8 @@ app.post(
             gameScheduleInfoList: schedules
           } = JSON.parse(body);
 
+          console.log(schedules)
+
           schedules.forEach((schedule) => {
             bulkSchedules.find({
               seasonIndex: schedule.seasonIndex,
