@@ -219,84 +219,86 @@ app.post(
         }
         default: {
           const property = `player${capitalizeFirstLetter(dataType)}StatInfoList`;
-          const stats = JSON.parse(body);
-          console.log('stats', stats)
-          // stats.forEach(stat => {
-          //   if (stat) {
-          //     if (dataType === 'passing') {
-          //       bulkPassingStats
-          //       .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
-          //       .upsert()
-          //       .replaceOne({
-          //         ...stat,
-          //         weekType,
-          //         leagueId: leagueIdNumber,
-          //         weekNumber: weekNumberNumber,
-          //         lastUpdated
-          //       })
-          //     }
-          //     if (dataType === 'rushing') {
-          //       bulkRushingStats
-          //       .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
-          //       .upsert()
-          //       .replaceOne({
-          //         ...stat,
-          //         weekType,
-          //         leagueId: leagueIdNumber,
-          //         weekNumber: weekNumberNumber,
-          //         lastUpdated
-          //       })
-          //     }
-          //     if (dataType === 'receiving') {
-          //       bulkReceivingStats
-          //       .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
-          //       .upsert()
-          //       .replaceOne({
-          //         ...stat,
-          //         weekType,
-          //         leagueId: leagueIdNumber,
-          //         weekNumber: weekNumberNumber,
-          //         lastUpdated
-          //       })
-          //     }
-          //     if (dataType === 'defense') {
-          //       bulkDefenseStats
-          //       .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
-          //       .upsert()
-          //       .replaceOne({
-          //         ...stat,
-          //         weekType,
-          //         leagueId: leagueIdNumber,
-          //         weekNumber: weekNumberNumber,
-          //         lastUpdated
-          //       })
-          //     }
-          //     if (dataType === 'kicking') {
-          //       bulkKickingStats
-          //       .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
-          //       .upsert()
-          //       .replaceOne({
-          //         ...stat,
-          //         weekType,
-          //         leagueId: leagueIdNumber,
-          //         weekNumber: weekNumberNumber,
-          //         lastUpdated
-          //       })
-          //     }
-          //     if (dataType === 'punting') {
-          //       bulkPuntingStats
-          //       .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
-          //       .upsert()
-          //       .replaceOne({
-          //         ...stat,
-          //         weekType,
-          //         leagueId: leagueIdNumber,
-          //         weekNumber: weekNumberNumber,
-          //         lastUpdated
-          //       })
-          //     }
-          //   }
-          // });
+          // not always an array; sometimes it's an object
+          // TODO: catch error is not array
+          const stats = JSON.parse(body)[property];
+
+          stats.forEach(stat => {
+            if (stat) {
+              if (dataType === 'passing') {
+                bulkPassingStats
+                .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .upsert()
+                .replaceOne({
+                  ...stat,
+                  weekType,
+                  leagueId: leagueIdNumber,
+                  weekNumber: weekNumberNumber,
+                  lastUpdated
+                })
+              }
+              if (dataType === 'rushing') {
+                bulkRushingStats
+                .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .upsert()
+                .replaceOne({
+                  ...stat,
+                  weekType,
+                  leagueId: leagueIdNumber,
+                  weekNumber: weekNumberNumber,
+                  lastUpdated
+                })
+              }
+              if (dataType === 'receiving') {
+                bulkReceivingStats
+                .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .upsert()
+                .replaceOne({
+                  ...stat,
+                  weekType,
+                  leagueId: leagueIdNumber,
+                  weekNumber: weekNumberNumber,
+                  lastUpdated
+                })
+              }
+              if (dataType === 'defense') {
+                bulkDefenseStats
+                .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .upsert()
+                .replaceOne({
+                  ...stat,
+                  weekType,
+                  leagueId: leagueIdNumber,
+                  weekNumber: weekNumberNumber,
+                  lastUpdated
+                })
+              }
+              if (dataType === 'kicking') {
+                bulkKickingStats
+                .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .upsert()
+                .replaceOne({
+                  ...stat,
+                  weekType,
+                  leagueId: leagueIdNumber,
+                  weekNumber: weekNumberNumber,
+                  lastUpdated
+                })
+              }
+              if (dataType === 'punting') {
+                bulkPuntingStats
+                .find({statId: stat.statId, weekType, weekIndex: stat.weekIndex, seasonIndex: stat.seasonIndex, leagueId: leagueIdNumber})
+                .upsert()
+                .replaceOne({
+                  ...stat,
+                  weekType,
+                  leagueId: leagueIdNumber,
+                  weekNumber: weekNumberNumber,
+                  lastUpdated
+                })
+              }
+            }
+          });
           break;
         }
       }
