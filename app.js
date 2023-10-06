@@ -220,6 +220,7 @@ app.post(
         default: {
           const property = `player${capitalizeFirstLetter(dataType)}StatInfoList`;
           const stats = JSON.parse(body)[property];
+          console.log('stats', stats[0])
           stats.forEach(stat => {
             if (stat) {
               if (dataType === 'passing') {
