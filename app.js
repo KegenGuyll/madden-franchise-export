@@ -66,9 +66,13 @@ app.post('/:platform/:leagueId/leagueteams', (req, res) => {
       })
     });
 
-    await bulk.execute();
-
-    res.sendStatus(200);
+    try {
+      await bulk.execute();
+      res.sendStatus(200);
+    } catch (error) {
+      console.error('Error processing league teams:', error);
+      res.status(500).send('Error processing league teams');
+    }
   });
 });
 
@@ -105,8 +109,13 @@ app.post('/:platform/:leagueId/standings', (req, res) => {
       })
     });
 
-    await bulk.execute();
-    res.sendStatus(200);
+    try {
+      await bulk.execute();
+      res.sendStatus(200);
+    } catch (error) {
+      console.error('Error processing standings:', error);
+      res.status(500).send('Error processing standings');
+    }
   });
 });
 
@@ -304,24 +313,27 @@ app.post(
       }
 
 
-      await Promise.allSettled([
-        bulkPassingStats.execute(),
-        bulkRushingStats.execute(),
-        bulkReceivingStats.execute(),
-        bulkDefenseStats.execute(),
-        bulkKickingStats.execute(),
-        bulkPuntingStats.execute()
-      ])
-
-      if (bulkTeamStats.length > 0) {
-        await bulkTeamStats.execute()
+      try {
+        await Promise.allSettled([
+          bulkPassingStats.execute(),
+          bulkRushingStats.execute(),
+          bulkReceivingStats.execute(),
+          bulkDefenseStats.execute(),
+          bulkKickingStats.execute(),
+          bulkPuntingStats.execute()
+        ])
+  
+        if (bulkTeamStats.length > 0) {
+          await bulkTeamStats.execute()
+        }
+        if(bulkSchedules.length > 0) {
+          await bulkSchedules.execute()
+        }
+        res.sendStatus(200);
+      } catch (error) {
+        console.error('Error processing stats:', error);
+        res.status(500).send('Error processing stats');
       }
-      if(bulkSchedules.length > 0) {
-        await bulkSchedules.execute()
-      }
-
-
-      res.sendStatus(200);
     });
   }
 );
