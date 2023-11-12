@@ -152,8 +152,6 @@ app.post(
             gameScheduleInfoList: schedules
           } = JSON.parse(body);
 
-          console.log(schedules)
-
           schedules.forEach((schedule) => {
             bulkSchedules.find({
               seasonIndex: schedule.seasonIndex,
@@ -328,6 +326,62 @@ app.post(
   }
 );
 
+const insertPlayers = async (res, rosterInfoList, leagueIdNumber) => {
+  const bulkExistingPlayers = mongoService.db(databaseName).collection('players').initializeUnorderedBulkOp()
+  const bulkHistoricalPlayers = mongoService.db(databaseName).collection('historical_Players').initializeUnorderedBulkOp()
+
+  const updatePlayerPromise = rosterInfoList.map(async (player) => {
+    const existingPlayerRecord = await mongoService.db(databaseName).collection('players').findOne({rosterId: player.rosterId })
+
+    // if player exist in db
+    if (existingPlayerRecord) {
+
+      // remove existing id
+      delete existingPlayerRecord._id
+
+      // add existing player record to historical table
+      bulkHistoricalPlayers.insert({
+        ...existingPlayerRecord,
+        updated_at: new Date()
+      })
+
+      // replace the existing player with updated player record
+      bulkExistingPlayers.find({
+        rosterId: player.rosterId,
+        leagueId: leagueIdNumber
+      }).upsert().replaceOne({
+        ...player,
+        // create timestamp for transaction
+        updated_at: new Date(),
+        leagueId: leagueIdNumber
+      })
+    } else {
+      // create new player record
+      bulkExistingPlayers.insert({
+        ...player,
+        leagueId: leagueIdNumber,
+        // create timestamp for transaction
+        created_at: new Date()
+      })
+    }
+  })
+
+  try {
+    await Promise.all(updatePlayerPromise)
+    if(bulkExistingPlayers.length > 0) {
+     await bulkExistingPlayers.execute(); 
+    }
+    if(bulkHistoricalPlayers.length > 0){
+     await bulkHistoricalPlayers.execute(); 
+    }
+    
+    res.sendStatus(200);
+  } catch (error) {
+    console.error('Error processing roster updates:', error);
+    res.status(500).send('Error processing roster updates');
+  }
+}
+
 // ROSTERS
 app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
   const {
@@ -338,10 +392,6 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
     }
   } = req;
   let body = '';
-
-  const bulkExistingPlayers = mongoService.db(databaseName).collection('players').initializeUnorderedBulkOp()
-  const bulkHistoricalPlayers = mongoService.db(databaseName).collection('historical_Players').initializeUnorderedBulkOp()
-
   const leagueIdNumber = Number(leagueId)
 
   req.on('data', chunk => {
@@ -357,53 +407,7 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
       return
     }
 
-    const updatePlayerPromise = rosterInfoList.map(async (player) => {
-      const existingPlayerRecord = await mongoService.db(databaseName).collection('players').findOne({rosterId: player.rosterId })
-
-      // if player exist in db
-      if (existingPlayerRecord) {
-
-        // add existing player record to historical table
-        bulkHistoricalPlayers.insert({
-          ...existingPlayerRecord,
-          updated_at: new Date()
-        })
-
-        // replace the existing player with updated player record
-        bulkExistingPlayers.find({
-          rosterId: player.rosterId,
-          leagueId: leagueIdNumber
-        }).upsert().replaceOne({
-          ...player,
-          // create timestamp for transaction
-          updated_at: new Date(),
-          leagueId: leagueIdNumber
-        })
-      } else {
-        // create new player record
-        bulkExistingPlayers.insert({
-          ...player,
-          leagueId: leagueIdNumber,
-          // create timestamp for transaction
-          created_at: new Date()
-        })
-      }
-    })
-
-    try {
-      await Promise.all(updatePlayerPromise)
-      if(bulkExistingPlayers.length > 0) {
-       await bulkExistingPlayers.execute(); 
-      }
-      if(bulkHistoricalPlayers.length > 0){
-       await bulkHistoricalPlayers.execute(); 
-      }
-      
-      res.sendStatus(200);
-    } catch (error) {
-      console.error('Error processing roster updates:', error);
-      res.status(500).send('Error processing roster updates');
-    }
+    insertPlayers(res, rosterInfoList, leagueIdNumber)
   });
 });
 
@@ -418,9 +422,6 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
   } = req;
   let body = '';
 
-  const bulkExistingPlayers = mongoService.db(databaseName).collection('players').initializeUnorderedBulkOp()
-  const bulkHistoricalPlayers = mongoService.db(databaseName).collection('historical_Players').initializeUnorderedBulkOp()
-
   const leagueIdNumber = Number(leagueId)
 
   req.on('data', chunk => {
@@ -436,53 +437,7 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
       return
     }
 
-
-    const updatePlayerPromise = rosterInfoList.map(async (player) => {
-      const existingPlayerRecord = await mongoService.db(databaseName).collection('players').findOne({rosterId: player.rosterId })
-
-      // if player exist in db
-      if (existingPlayerRecord) {
-
-        // add existing player record to historical table
-        bulkHistoricalPlayers.insert({
-          ...existingPlayerRecord,
-          updated_at: new Date()
-        })
-
-        // replace the existing player with updated player record
-        bulkExistingPlayers.find({
-          rosterId: player.rosterId,
-          leagueId: leagueIdNumber
-        }).upsert().replaceOne({
-          ...player,
-          // create timestamp for transaction
-          updated_at: new Date(),
-          leagueId: leagueIdNumber
-        })
-      } else {
-        // create new player record
-        bulkExistingPlayers.insert({
-          ...player,
-          leagueId: leagueIdNumber,
-          // create timestamp for transaction
-          created_at: new Date()
-        })
-      }
-    })
-
-    try {
-      await Promise.all(updatePlayerPromise)
-      if(bulkExistingPlayers.length > 0) {
-        await bulkExistingPlayers.execute(); 
-      }
-      if(bulkHistoricalPlayers.length > 0){
-        await bulkHistoricalPlayers.execute(); 
-      }
-      res.sendStatus(200);
-    } catch (error) {
-      console.error('Error processing roster updates:', error);
-      res.status(500).send('Error processing roster updates');
-    }
+    insertPlayers(res, rosterInfoList, leagueIdNumber)
   });
 });
 
