@@ -392,8 +392,13 @@ app.post('/:platform/:leagueId/freeagents/roster', (req, res) => {
 
     try {
       await Promise.all(updatePlayerPromise)
-      await bulkExistingPlayers.execute();
-      await bulkHistoricalPlayers.execute();
+      if(bulkExistingPlayers.length > 0) {
+       await bulkExistingPlayers.execute(); 
+      }
+      if(bulkHistoricalPlayers.length > 0){
+       await bulkHistoricalPlayers.execute(); 
+      }
+      
       res.sendStatus(200);
     } catch (error) {
       console.error('Error processing roster updates:', error);
@@ -467,8 +472,12 @@ app.post('/:platform/:leagueId/team/:teamId/roster', async (req, res) => {
 
     try {
       await Promise.all(updatePlayerPromise)
-      await bulkExistingPlayers.execute();
-      await bulkHistoricalPlayers.execute();
+      if(bulkExistingPlayers.length > 0) {
+        await bulkExistingPlayers.execute(); 
+      }
+      if(bulkHistoricalPlayers.length > 0){
+        await bulkHistoricalPlayers.execute(); 
+      }
       res.sendStatus(200);
     } catch (error) {
       console.error('Error processing roster updates:', error);
