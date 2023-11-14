@@ -96,6 +96,8 @@ app.post('/:platform/:leagueId/standings', (req, res) => {
       teamStandingInfoList: teams
     } = JSON.parse(body);
 
+    console.log(teams)
+
     teams.forEach(team => {
       bulk.find({
         teamId: team.teamId,
@@ -191,7 +193,6 @@ app.post(
               statId: stat.statId,               
               weekIndex: stat.weekIndex,
               weekType,
-              weekNumber: weekNumberNumber,
               scheduleId: stat.scheduleId,
               leagueId: leagueIdNumber
             })
@@ -354,6 +355,7 @@ const insertPlayers = async (res, rosterInfoList, leagueIdNumber) => {
       // add existing player record to historical table
       bulkHistoricalPlayers.insert({
         ...existingPlayerRecord,
+        leagueId: leagueIdNumber,
         updated_at: new Date()
       })
 
